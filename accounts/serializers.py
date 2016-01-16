@@ -15,3 +15,6 @@ class AccountSerializer(serializers.Serializer):
   savings = serializers.IntegerField()
   scheduled_frequency = serializers.ChoiceField(choices=['day', 'week', 'month'])
 
+class BalanceSerializer(serializers.Serializer):
+  savings = serializers.IntegerField()
+
