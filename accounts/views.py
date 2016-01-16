@@ -6,7 +6,7 @@ from rest_framework.authtoken.models import Token
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.authentication import TokenAuthentication, SessionAuthentication
-from accounts.serializers import RegistrationSerializer, ScheduleSerializer, AccountSerializer, BalanceSerializer, WithdrawSerializer, DepositSerializer
+from accounts.serializers import RegistrationSerializer, ScheduleSerializer, AccountSerializer, BalanceSerializer, WithdrawSerializer, DepositSerializer, IsActiveSerializer
 from django.core.exceptions import ObjectDoesNotExist
 
 class CreateAccount(APIView):
@@ -82,3 +82,31 @@ class AccountDeposit(APIView):
       return Response({'success': True}, status=status.HTTP_200_OK)
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+class AccountIsActive(APIView):
+  authentication_classes = (TokenAuthentication, SessionAuthentication)
+  permission_classes = (IsAuthenticated,)
+
+  def get(self, request, format=None):
+    return Response(IsActiveSerializer(request.user).data)
+
+class AccountRestart(APIView):
+  authentication_classes = (TokenAuthentication, SessionAuthentication)
+  permission_classes = (IsAuthenticated,)
+
+  def get(self, request, format=None):
+    if request.user.active: #error if already active
+      return Response({'errors': 'Already active'}, status=status.HTTP_400_BAD_REQUEST)
+    request.user.active = True
+    request.user.save()
+    return Response({'success': True}, status=status.HTTP_200_OK)
+
+class AccountPause(APIView):
+  authentication_classes = (TokenAuthentication, SessionAuthentication)
+  permission_classes = (IsAuthenticated,)
+
+  def get(self, request, format=None):
+    if not(request.user.active): #error if already active
+      return Response({'errors': 'Already not active'}, status=status.HTTP_400_BAD_REQUEST)
+    request.user.active = False
+    request.user.save()
+    return Response({'success': True}, status=status.HTTP_200_OK)

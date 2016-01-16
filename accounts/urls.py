@@ -11,6 +11,9 @@ urlpatterns = [
     url(r'^balance/', views.AccountBalanceInfo.as_view(), name='balance'),
     url(r'^withdraw/', views.AccountWithdraw.as_view(), name='withdraw'),
     url(r'^deposit/', views.AccountDeposit.as_view(), name='deposit'),
+    url(r'^active/', views.AccountIsActive.as_view(), name='active'),
+    url(r'^restart/', views.AccountRestart.as_view(), name='restart'),
+    url(r'^pause/', views.AccountPause.as_view(), name='pause'),
 ]
 
 urlpatterns = format_suffix_patterns(urlpatterns)

@@ -8,4 +8,4 @@ class Account(AbstractUser):
   scheduled_deposit = models.IntegerField(default=0)
   scheduled_frequency = models.CharField(max_length=30,
     choices=[('day', 'day'),('week', 'week'),('month', 'month')], null=True)
-
+  active = models.BooleanField(default=False)

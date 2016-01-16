@@ -23,3 +23,6 @@ class WithdrawSerializer(serializers.Serializer):
 
 class DepositSerializer(serializers.Serializer):
 	deposit = serializers.IntegerField()
+
+class IsActiveSerializer(serializers.Serializer):
+	active = serializers.BooleanField()
