@@ -36,6 +36,7 @@ class ScheduleAccount(APIView):
     if serializer.is_valid():
       request.user.scheduled_deposit = serializer.data['amount']
       request.user.scheduled_frequency = serializer.data['frequency']
+      request.user.save()
       return Response({'success': True}, status=status.HTTP_200_OK)
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
