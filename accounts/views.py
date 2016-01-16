@@ -6,7 +6,7 @@ from rest_framework.authtoken.models import Token
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.authentication import TokenAuthentication, SessionAuthentication
-from accounts.serializers import RegistrationSerializer, ScheduleSerializer, AccountSerializer, BalanceSerializer
+from accounts.serializers import RegistrationSerializer, ScheduleSerializer, AccountSerializer, BalanceSerializer, WithdrawSerializer, DepositSerializer
 from django.core.exceptions import ObjectDoesNotExist
 
 class CreateAccount(APIView):
@@ -53,3 +53,33 @@ class AccountBalanceInfo(APIView):
 
   def get(self, request, format=None):
     return Response(BalanceSerializer(request.user).data)
+
+class AccountWithdraw(APIView):
+  authentication_classes = (TokenAuthentication, SessionAuthentication)
+  permission_classes = (IsAuthenticated,)
+
+  def post(self, request, format=None):
+    serializer = WithdrawSerializer(data=request.data)
+    if serializer.is_valid():
+      #request.user.savings = serializer.data['savings'] are these setting the values in the db?
+      #request.user.withdrawal = serializer.data['withdrawal']
+      savings = serializer.data['savings']
+      withdrawal = serializer.data['withdrawal']
+      if withdrawal > savings: # withdrawing amount more than savings
+        return Response({'errors': 'Withdrawing amount greater than total savings'}, status=status.HTTP_400_BAD_REQUEST)
+      request.user.savings = savings - withdrawal
+      return Response({'success': True}, status=status.HTTP_200_OK)
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class AccountDeposit(APIView):
+  authentication_classes = (TokenAuthentication, SessionAuthentication)
+  permission_classes = (IsAuthenticated,)
+
+  def post(self, request, format=None):
+    serializer = DepositSerializer(data=request.data)
+    if serializer.is_valid():
+      request.user.savings = request.user.savings + serializer.data['deposit']
+      request.user.save()
+      return Response({'success': True}, status=status.HTTP_200_OK)
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+

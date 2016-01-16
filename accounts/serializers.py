@@ -18,3 +18,9 @@ class AccountSerializer(serializers.Serializer):
 class BalanceSerializer(serializers.Serializer):
   savings = serializers.IntegerField()
 
+class WithdrawSerializer(serializers.Serializer):
+	savings = serializers.IntegerField()
+	withdrawal 	= serializers.IntegerField()
+
+class DepositSerializer(serializers.Serializer):
+	deposit = serializers.IntegerField()
