@@ -8,6 +8,7 @@ urlpatterns = [
     url(r'^create/', views.CreateAccount.as_view(), name='create'),
     url(r'^schedule/', views.ScheduleAccount.as_view(), name='schedule'),
     url(r'^info/', views.AccountInfo.as_view(), name='info'),
+    url(r'^balance/', views.AccountBalanceInfo.as_view(), name='balance'),
 ]
 
 urlpatterns = format_suffix_patterns(urlpatterns)

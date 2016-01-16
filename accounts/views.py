@@ -6,7 +6,7 @@ from rest_framework.authtoken.models import Token
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.authentication import TokenAuthentication, SessionAuthentication
-from accounts.serializers import RegistrationSerializer, ScheduleSerializer, AccountSerializer
+from accounts.serializers import RegistrationSerializer, ScheduleSerializer, AccountSerializer, BalanceSerializer
 from django.core.exceptions import ObjectDoesNotExist
 
 class CreateAccount(APIView):
@@ -47,3 +47,10 @@ class AccountInfo(APIView):
 
   def get(self, request, format=None):
     return Response(AccountSerializer(request.user).data)
+
+class AccountBalanceInfo(APIView):
+  authentication_classes = (TokenAuthentication, SessionAuthentication)
+  permission_classes = (IsAuthenticated,)
+
+  def get(self, request, format=None):
+    return Response(BalanceSerializer(request.user).data)
