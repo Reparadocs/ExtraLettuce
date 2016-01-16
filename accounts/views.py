@@ -36,6 +36,7 @@ class ScheduleAccount(APIView):
     if serializer.is_valid():
       request.user.scheduled_deposit = serializer.data['amount']
       request.user.scheduled_frequency = serializer.data['frequency']
+      request.user.save()
       return Response({'success': True}, status=status.HTTP_200_OK)
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -61,13 +62,11 @@ class AccountWithdraw(APIView):
   def post(self, request, format=None):
     serializer = WithdrawSerializer(data=request.data)
     if serializer.is_valid():
-      #request.user.savings = serializer.data['savings'] are these setting the values in the db?
-      #request.user.withdrawal = serializer.data['withdrawal']
-      savings = serializer.data['savings']
       withdrawal = serializer.data['withdrawal']
-      if withdrawal > savings: # withdrawing amount more than savings
+      if withdrawal > request.user.savings: # withdrawing amount more than savings
         return Response({'errors': 'Withdrawing amount greater than total savings'}, status=status.HTTP_400_BAD_REQUEST)
-      request.user.savings = savings - withdrawal
+      request.user.savings = request.user.savings - withdrawal
+      request.user.save()
       return Response({'success': True}, status=status.HTTP_200_OK)
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
