@@ -10,6 +10,8 @@ class Account(AbstractUser):
     choices=[('day', 'day'),('week', 'week'),('month', 'month')], null=True)
   active = models.BooleanField(default=False)
   token = models.CharField(max_length=100, null=True)
+  bank_amount = models.IntegerField(default=0)
+  bank_name = models.CharField(max_length=100, null=True)
 
 class Goals(models.Model):
   name = models.CharField(max_length=100)

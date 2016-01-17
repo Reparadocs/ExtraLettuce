@@ -36,3 +36,7 @@ class BankAccountSerializer(serializers.Serializer):
 class BankConfirmSerializer(serializers.Serializer):
   account_id = serializers.CharField(max_length=200)
   token = serializers.CharField(max_length=200)
+
+class BankMockSerializer(serializers.Serializer):
+	bank_amount = serializers.IntegerField()
+	bank_name = serializers.CharField(max_length=100)
