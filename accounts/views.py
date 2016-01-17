@@ -1,16 +1,17 @@
 from django.shortcuts import render
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from accounts.models import Account, Goal
+from accounts.models import *
 from rest_framework.authtoken.models import Token
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.authentication import TokenAuthentication, SessionAuthentication
 from accounts.serializers import *
 from django.core.exceptions import ObjectDoesNotExist
+from rest_framework_swagger import *
+from datetime import date
 import requests
 import json
-from rest_framework_swagger import *
 
 class CreateAccount(APIView):
   def post(self, request, format=None):
@@ -120,6 +121,8 @@ class AccountWithdraw(APIView):
         return Response({'errors': 'Withdrawing amount greater than total savings'}, status=status.HTTP_400_BAD_REQUEST)
       request.user.savings = request.user.savings - withdrawal
       request.user.save()
+      history = History(date=date.today(), balance=request.user.savings, owner=request.user)
+      history.save()
       return Response({'success': True}, status=status.HTTP_200_OK)
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -129,7 +132,8 @@ class AccountDeposit(APIView):
 
   def post(self, request, format=None):
     """
-    Deposit into the account's savings.
+    Deposit into the account's savings. Every deposit will
+    also be logged in the acouunt's balance history.
     Returns 200 upon success and 400 on error.
     ---
     request_serializer: DepositSerializer
@@ -138,6 +142,8 @@ class AccountDeposit(APIView):
     if serializer.is_valid():
       request.user.savings = request.user.savings + serializer.data['deposit']
       request.user.save()
+      history = History(date=date.today(), balance=request.user.savings, owner=request.user)
+      history.save()
       return Response({'success': True}, status=status.HTTP_200_OK)
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -230,6 +236,12 @@ class AccountMock(APIView):
   permission_classes = (IsAuthenticated,)
 
   def post(self, request, format=None):
+    """
+    Update user's bank amount and bank name.
+    Returns 200 upon success and 400 on error.
+    ---
+    request_serializer: BankMockSerializer
+    """
     serializer = BankMockSerializer(data=request.data)
     if serializer.is_valid():
       request.user.bank_amount = serializer.data['bank_amount']
@@ -294,4 +306,14 @@ class AccountGoals(APIView):
       return Response({"success": True}, status=status.HTTP_201_CREATED)
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+class AccountHistory(APIView):
+  authentication_classes = (TokenAuthentication, SessionAuthentication)
+  permission_classes = (IsAuthenticated,)
 
+  def get(self, request, format=None):
+    """
+    Retrieves the savings balance history with corresponding date and times.
+    ---
+    response_serializer: AccountHistorySerializer
+    """
+    return Response(AccountHistorySerializer(request.user.history_set.all(), many=True).data)

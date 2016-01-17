@@ -17,6 +17,9 @@ class Account(AbstractUser):
 class Goal(models.Model):
   name = models.CharField(max_length=100)
   amount = models.IntegerField()
-
   owner = models.ForeignKey(Account,)
 
+class History(models.Model):
+	date = models.DateField(auto_now=False, auto_now_add=False)
+	balance = models.IntegerField(default=0)
+	owner = models.ForeignKey(Account,)

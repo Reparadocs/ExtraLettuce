@@ -47,3 +47,7 @@ class BankMockSerializer(serializers.Serializer):
 class AccountGoalSerializer(serializers.Serializer):
   name = serializers.CharField(max_length=100)
   amount = serializers.IntegerField()
+
+class AccountHistorySerializer(serializers.Serializer):
+	balance = serializers.IntegerField()
+	date = serializers.DateField()
