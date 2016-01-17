@@ -144,6 +144,12 @@ class AccountLink(APIView):
         return Response(json.dumps(result), status=status.HTTP_200_OK)
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+class AccountMock(APIView):
+  authentication_classes = (TokenAuthentication, SessionAuthentication)
+  permission_classes = (IsAuthenticated,)
+
+
+
 class AccountConfirm(APIView):
   authentication_classes = (TokenAuthentication, SessionAuthentication)
   permission_classes = (IsAuthenticated,)
