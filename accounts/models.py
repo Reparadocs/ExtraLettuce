@@ -10,3 +10,10 @@ class Account(AbstractUser):
     choices=[('day', 'day'),('week', 'week'),('month', 'month')], null=True)
   active = models.BooleanField(default=False)
   token = models.CharField(max_length=100, null=True)
+
+class Goals(models.Model):
+  name = models.CharField(max_length=100)
+  amount = models.IntegerField()
+
+  owner = models.ForeignKey(Account,)
+
