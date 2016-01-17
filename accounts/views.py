@@ -145,19 +145,23 @@ class AccountLink(APIView):
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class AccountConfirm(APIView):
-  serializer = BankConfirmSerializer(data=request.data)
-  if serializer.is_valid():
-    payload = {
-      'client_id': '569ab81ba4ce3935462bb607',
-      'secret': '973fdf467c57fc885fbd631a5653bd',
-      'public_token': serializer.data['token'],
-      'account_id': serializer.data['account_id'],
-    }
-    r = requests.post("https://tartan.plaid.com/exchange_token", data=payload)
-    response = r.json()
-    if r.status_code != 200:
-      return Response(r.json(), status=status.HTTP_400_BAD_REQUEST)
-    else:
-      request.user.token = response['stripe_bank_account_token']
-      return Response({'success': True}, status=status.HTTP_200_OK)
-  return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+  authentication_classes = (TokenAuthentication, SessionAuthentication)
+  permission_classes = (IsAuthenticated,)
+
+  def post(self, request, format=None):
+    serializer = BankConfirmSerializer(data=request.data)
+    if serializer.is_valid():
+      payload = {
+        'client_id': '569ab81ba4ce3935462bb607',
+        'secret': '973fdf467c57fc885fbd631a5653bd',
+        'public_token': serializer.data['token'],
+        'account_id': serializer.data['account_id'],
+      }
+      r = requests.post("https://tartan.plaid.com/exchange_token", data=payload)
+      response = r.json()
+      if r.status_code != 200:
+        return Response(r.json(), status=status.HTTP_400_BAD_REQUEST)
+      else:
+        request.user.token = response['stripe_bank_account_token']
+        return Response({'success': True}, status=status.HTTP_200_OK)
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
