@@ -16,7 +16,7 @@ urlpatterns = [
     url(r'^pause/', views.AccountPause.as_view(), name='pause'),
     url(r'^link/', views.AccountLink.as_view(), name='link'),
     url(r'^confirm/', views.AccountConfirm.as_view(), name='confirm'),
-    #url(r'^docs/', include('rest_framework_swagger.urls')),
+    url(r'^mock/', views.AccountMock.as_view(), name='mock'),
 ]
 
 urlpatterns = format_suffix_patterns(urlpatterns)

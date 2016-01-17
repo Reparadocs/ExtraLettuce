@@ -210,7 +210,14 @@ class AccountMock(APIView):
   authentication_classes = (TokenAuthentication, SessionAuthentication)
   permission_classes = (IsAuthenticated,)
 
-
+  def post(self, request, format=None):
+    serializer = BankMockSerializer(data=request.data)
+    if serializer.is_valid():
+      request.user.bank_amount = serializer.data['bank_amount']
+      request.user.bank_name = serializer.data['bank_name']
+      request.user.save()
+      return Response({'success': True}, status=status.HTTP_200_OK)
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class AccountConfirm(APIView):
   authentication_classes = (TokenAuthentication, SessionAuthentication)
