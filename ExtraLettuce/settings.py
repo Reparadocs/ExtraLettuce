@@ -80,7 +80,7 @@ SWAGGER_SETTINGS = {
     'is_superuser': False,
     'permission_denied_handler': None,
     'resource_access_handler': None,
-    'base_path':'localhost:8000/docs',
+    'base_path':'wwww.extralettuce.co/docs',
     'info': {
         'contact': 'extralettuce@example.com',
         'description': 'This is a sample server Petstore server. '
