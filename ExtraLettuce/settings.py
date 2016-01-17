@@ -80,7 +80,7 @@ SWAGGER_SETTINGS = {
     'is_superuser': False,
     'permission_denied_handler': None,
     'resource_access_handler': None,
-    'base_path':'wwww.extralettuce.co/docs',
+    'base_path':'localhost:8000/docs', #'localhost:8000/docs' -- set to this to run locoally
     'info': {
         'contact': 'extralettuce@example.com',
         'description': 'This is a sample server Petstore server. '
