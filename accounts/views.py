@@ -135,13 +135,13 @@ class AccountLink(APIView):
       else:
         accounts = []
         for account in response['accounts']:
-          account.append({
+          accounts.append({
             'balance': account['balance']['current'],
             'id': account['_id'],
             'name': account['meta']['name']
           })
         result = {'accounts': accounts, 'token': response['public_token']}
-        return Response(json.dump(result), status=status.HTTP_200_OK)
+        return Response(json.dumps(result), status=status.HTTP_200_OK)
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class AccountConfirm(APIView):
@@ -163,5 +163,6 @@ class AccountConfirm(APIView):
         return Response(r.json(), status=status.HTTP_400_BAD_REQUEST)
       else:
         request.user.token = response['stripe_bank_account_token']
+        request.user.save()
         return Response({'success': True}, status=status.HTTP_200_OK)
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
