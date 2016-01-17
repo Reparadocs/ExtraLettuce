@@ -141,7 +141,11 @@ class AccountDeposit(APIView):
     """
     serializer = DepositSerializer(data=request.data)
     if serializer.is_valid():
-      request.user.savings = request.user.savings + serializer.data['deposit']
+      deposit = serializer.data['deposit']
+      if deposit > request.user.bank_amount: #depositing more than bank amount
+        return Response({'errors': 'Depositing more than bank amount'}, status=status.HTTP_400_BAD_REQUEST)
+      request.user.savings = request.user.savings + deposit
+      request.user.bank_amount = request.user.bank_amount - deposit
       request.user.save()
       history = History(date=date.today(), balance=request.user.savings, owner=request.user)
       history.save()
@@ -235,6 +239,14 @@ class AccountLink(APIView):
 class AccountMock(APIView):
   authentication_classes = (TokenAuthentication, SessionAuthentication)
   permission_classes = (IsAuthenticated,)
+
+  def get(self, request, format=None):
+    """
+    Retrieve the account bank information.
+    ---
+    response_serializer: BankMockSerializer
+    """
+    return Response(BankMockSerializer(request.user).data)
 
   def post(self, request, format=None):
     """
@@ -346,8 +358,6 @@ class HistoryMock1(APIView): # d,d,d,d,d
     history.save()
     history = History(date="2015-1-10",  balance=80000, owner=request.user)
     history.save()
-    history = History(date="2015-1-17",  balance=100000, owner=request.user)
-    history.save()
     goal = Goal(name='Trip to France', amount=1600000, owner=request.user)
     goal.save()
     return Response(AccountHistorySerializer(request.user.history_set.all(), many=True).data)
@@ -368,8 +378,6 @@ class HistoryMock2(APIView): # d,d,w,d,w
     history = History(date="2016-1-3",   balance=30000, owner=request.user)
     history.save()
     history = History(date="2015-1-10",  balance=50000, owner=request.user)
-    history.save()
-    history = History(date="2015-1-17",  balance=40000, owner=request.user)
     history.save()
     goal = Goal(name='Trip to France', amount=1600000, owner=request.user)
     goal.save()
@@ -392,8 +400,6 @@ class HistoryMock3(APIView): # d,d,w,d,d
     history.save()
     history = History(date="2015-1-10",  balance=30000, owner=request.user)
     history.save()
-    history = History(date="2015-1-17",  balance=50000, owner=request.user)
-    history.save()
     goal = Goal(name='Trip to France', amount=1600000, owner=request.user)
     goal.save()
     return Response(AccountHistorySerializer(request.user.history_set.all(), many=True).data)
@@ -414,8 +420,6 @@ class HistoryMock4(APIView): # d,d,d,d,w
     history = History(date="2016-1-3",   balance=60000, owner=request.user)
     history.save()
     history = History(date="2015-1-10",  balance=80000, owner=request.user)
-    history.save()
-    history = History(date="2015-1-17",  balance=50000, owner=request.user)
     history.save()
     goal = Goal(name='Trip to France', amount=1600000, owner=request.user)
     goal.save()
