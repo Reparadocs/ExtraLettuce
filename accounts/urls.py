@@ -20,6 +20,7 @@ urlpatterns = [
     url(r'^goals/', views.AccountGoals.as_view(), name='goals'),
     url(r'^days/', views.ScheduleDaysLeft.as_view(), name='days'),
     url(r'^history/', views.AccountHistory.as_view(), name='history'),
+    url(r'^daily/', views.DailyCron.as_view(), name='daily'),
 ]
 
 urlpatterns = format_suffix_patterns(urlpatterns)

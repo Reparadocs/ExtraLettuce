@@ -1,0 +1,81 @@
+#icon {
+	padding-top: 20px;
+	margin: auto;
+	align: middle;
+	display: block;
+	z-index: -1;
+}
+#lettuce-text {
+	margin: auto;
+	align: middle;
+	display: block;
+	width: 200px;
+	padding-top: 50px;
+}
+@media (max-width: 750px;) {
+	#lettuce-text {
+		padding-top: 0px;
+	}
+}
+.content {
+	z-index: 1;
+	vertical-align: middle;
+}
+#product {
+	padding-top: 20px;
+}
+
+h2 {
+	color: white;
+	font-family: 'Roboto', sans-serif;
+	text-align: center;
+	margin-bottom: 0px;
+	font-size: 30px;
+}
+p {
+	color: white;
+	font-family: 'Roboto', sans-serif;
+	text-align: center;
+	font-size: 20px;
+	line-height: 1.3em;
+	margin-top: 10px;
+}
+body {
+	background-color: #00C853;
+	background-image: url(images/product-image.png)
+	vertical-align: middle;
+}
+
+#snowflakeContainer {
+    position: absolute;
+    left: 0px;
+    top: 0px;
+}
+.snowflake {
+    padding-left: 15px;
+    font-family: 'Roboto', sans-serif;
+    font-size: 2px;
+    line-height: 24px;
+    position: fixed;
+    color: #17A142;
+    user-select: none;
+    z-index: 1;
+}
+.snowflake:hover {
+    cursor: default;
+}
+.left-side {
+	vertical-align: middle;
+	margin-top: 30px;
+}
+@media (max-width: 769px) {
+	#product {
+		display: none;
+	}
+}
+@media (min-width: 900px) {
+	body {
+		width: 900px;
+		margin: 0 auto;
+	}
+}

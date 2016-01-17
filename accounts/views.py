@@ -9,6 +9,7 @@ from rest_framework.authentication import TokenAuthentication, SessionAuthentica
 from accounts.serializers import *
 from django.core.exceptions import ObjectDoesNotExist
 from rest_framework_swagger import *
+from django.core.mail import send_mail
 from datetime import date
 import requests
 import json
@@ -317,3 +318,7 @@ class AccountHistory(APIView):
     response_serializer: AccountHistorySerializer
     """
     return Response(AccountHistorySerializer(request.user.history_set.all(), many=True).data)
+
+class DailyCron(APIView):
+  def post(self, request, format=None):
+    send_mail('Test Cron', 'Here is a test', 'reparadocs@amazon.com', ['reparadocs@gmail.com'])
