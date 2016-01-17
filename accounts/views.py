@@ -6,8 +6,10 @@ from rest_framework.authtoken.models import Token
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.authentication import TokenAuthentication, SessionAuthentication
-from accounts.serializers import RegistrationSerializer, ScheduleSerializer, AccountSerializer, BalanceSerializer, WithdrawSerializer, DepositSerializer, IsActiveSerializer
+from accounts.serializers import *
 from django.core.exceptions import ObjectDoesNotExist
+import requests
+import json
 
 class CreateAccount(APIView):
   def post(self, request, format=None):
@@ -110,3 +112,52 @@ class AccountPause(APIView):
     request.user.active = False
     request.user.save()
     return Response({'success': True}, status=status.HTTP_200_OK)
+
+class AccountLink(APIView):
+  authentication_classes = (TokenAuthentication, SessionAuthentication)
+  permission_classes = (IsAuthenticated,)
+
+  def post(self, request, format=None):
+    serializer = BankAccountSerializer(data=request.data)
+    if serializer.is_valid():
+      payload = {
+        'public_key': '67393c180257916a023493c5adc0d3',
+        'username': serializer.data['bank_username'],
+        'password': serializer.data['bank_password'],
+        'institution_type': serializer.data['institution'],
+        'product': 'auth',
+        'include_accounts': True,
+      }
+      r = requests.post("https://link-tartan.plaid.com/authenticate", data=payload)
+      response = r.json()
+      if r.status_code != 200:
+        return Response(r.json(), status=status.HTTP_400_BAD_REQUEST)
+      else:
+        accounts = []
+        for account in response['accounts']:
+          account.append({
+            'balance': account['balance']['current'],
+            'id': account['_id'],
+            'name': account['meta']['name']
+          })
+        result = {'accounts': accounts, 'token': response['public_token']}
+        return Response(json.dump(result), status=status.HTTP_200_OK)
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class AccountConfirm(APIView):
+  serializer = BankConfirmSerializer(data=request.data)
+  if serializer.is_valid():
+    payload = {
+      'client_id': '569ab81ba4ce3935462bb607',
+      'secret': '973fdf467c57fc885fbd631a5653bd',
+      'public_token': serializer.data['token'],
+      'account_id': serializer.data['account_id'],
+    }
+    r = requests.post("https://tartan.plaid.com/exchange_token", data=payload)
+    response = r.json()
+    if r.status_code != 200:
+      return Response(r.json(), status=status.HTTP_400_BAD_REQUEST)
+    else:
+      request.user.token = response['stripe_bank_account_token']
+      return Response({'success': True}, status=status.HTTP_200_OK)
+  return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

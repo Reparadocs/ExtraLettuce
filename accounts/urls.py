@@ -14,6 +14,7 @@ urlpatterns = [
     url(r'^active/', views.AccountIsActive.as_view(), name='active'),
     url(r'^restart/', views.AccountRestart.as_view(), name='restart'),
     url(r'^pause/', views.AccountPause.as_view(), name='pause'),
+    url(r'^link/', views.AccountLink.as_view(), name='link'),
 ]
 
 urlpatterns = format_suffix_patterns(urlpatterns)

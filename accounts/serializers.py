@@ -26,3 +26,12 @@ class DepositSerializer(serializers.Serializer):
 
 class IsActiveSerializer(serializers.Serializer):
 	active = serializers.BooleanField()
+
+class BankAccountSerializer(serializers.Serializer):
+  bank_username = serializers.CharField(max_length=100)
+  bank_password = serializers.CharField(max_length=100)
+  institution = serializers.CharField(max_length=100)
+
+class BankConfirmSerializer(serializers.Serializer):
+  account_id = serializers.CharField(max_length=200)
+  token = serializers.CharField(max_length=200)

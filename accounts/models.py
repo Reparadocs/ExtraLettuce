@@ -9,3 +9,4 @@ class Account(AbstractUser):
   scheduled_frequency = models.CharField(max_length=30,
     choices=[('day', 'day'),('week', 'week'),('month', 'month')], null=True)
   active = models.BooleanField(default=False)
+  token = models.CharField(max_length=100, null=True)
