@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from accounts.models import Account
+from accounts.models import Account, Goal
 from rest_framework.authtoken.models import Token
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
@@ -247,3 +247,22 @@ class AccountConfirm(APIView):
         request.user.save()
         return Response({'success': True}, status=status.HTTP_200_OK)
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class AccountGoals(APIView):
+  authentication_classes = (TokenAuthentication, SessionAuthentication)
+  permission_classes = (IsAuthenticated,)
+
+  def get(self, request, format=None):
+    if len(request.user.goal_set.all()) is not 0:
+      return Response(AccountGoalSerializer(request.user.goal_set.all(), many=True).data)
+    return Response({})
+
+  def post(self, request, format=None):
+    serializer = AccountGoalSerializer(data=request.data)
+    if serializer.is_valid():
+      goal = Goal(name=serializer.data['name'], amount=serializer.data['amount'], owner=request.user)
+      goal.save()
+      return Response({"success": True}, status=status.HTTP_201_CREATED)
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+

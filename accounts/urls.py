@@ -17,6 +17,7 @@ urlpatterns = [
     url(r'^link/', views.AccountLink.as_view(), name='link'),
     url(r'^confirm/', views.AccountConfirm.as_view(), name='confirm'),
     url(r'^mock/', views.AccountMock.as_view(), name='mock'),
+    url(r'^goals/', views.AccountGoals.as_view(), name='goals'),
 ]
 
 urlpatterns = format_suffix_patterns(urlpatterns)

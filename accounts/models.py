@@ -13,7 +13,7 @@ class Account(AbstractUser):
   bank_amount = models.IntegerField(default=0)
   bank_name = models.CharField(max_length=100, null=True)
 
-class Goals(models.Model):
+class Goal(models.Model):
   name = models.CharField(max_length=100)
   amount = models.IntegerField()
 

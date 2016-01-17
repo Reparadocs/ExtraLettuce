@@ -40,3 +40,7 @@ class BankConfirmSerializer(serializers.Serializer):
 class BankMockSerializer(serializers.Serializer):
 	bank_amount = serializers.IntegerField()
 	bank_name = serializers.CharField(max_length=100)
+
+class AccountGoalSerializer(serializers.Serializer):
+  name = serializers.CharField(max_length=100)
+  amount = serializers.IntegerField()
