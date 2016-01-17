@@ -322,3 +322,106 @@ class AccountHistory(APIView):
 class DailyCron(APIView):
   def post(self, request, format=None):
     send_mail('Test Cron', 'Here is a test', 'reparadocs@amazon.com', ['reparadocs@gmail.com'])
+
+class DeleteHistory(APIView):
+  def get(self, request, format=None):
+    request.user.history_set.all().delete()
+    request.user.save()
+    return Response(AccountHistorySerializer(request.user.history_set.all(), many=True).data)
+
+class HistoryMock1(APIView): # d,d,d,d,d
+  def get(self, request, format=None):
+    request.user.savings = 100000
+    request.user.scheduled_deposit = 20000
+    request.user.scheduled_frequency = 'week'
+    request.user.active = True
+    request.user.bank_amount = 9000000
+    request.user.bank_name = 'Bank of America'
+    request.user.save()
+    history = History(date="2015-12-20", balance=20000, owner=request.user)
+    history.save()
+    history = History(date="2015-12-27", balance=40000, owner=request.user)
+    history.save()
+    history = History(date="2016-1-3",   balance=60000, owner=request.user)
+    history.save()
+    history = History(date="2015-1-10",  balance=80000, owner=request.user)
+    history.save()
+    history = History(date="2015-1-17",  balance=100000, owner=request.user)
+    history.save()
+    goal = Goal(name='Trip to France', amount=1600000, owner=request.user)
+    goal.save()
+    return Response(AccountHistorySerializer(request.user.history_set.all(), many=True).data)
+
+class HistoryMock2(APIView): # d,d,w,d,w
+  def get(self, request, format=None):
+    request.user.savings = 40000
+    request.user.scheduled_deposit = 20000
+    request.user.scheduled_frequency = 'week'
+    request.user.active = True
+    request.user.bank_amount = 9000000
+    request.user.bank_name = 'Bank of America'
+    request.user.save()
+    history = History(date="2015-12-20", balance=20000, owner=request.user)
+    history.save()
+    history = History(date="2015-12-27", balance=40000, owner=request.user)
+    history.save()
+    history = History(date="2016-1-3",   balance=30000, owner=request.user)
+    history.save()
+    history = History(date="2015-1-10",  balance=50000, owner=request.user)
+    history.save()
+    history = History(date="2015-1-17",  balance=40000, owner=request.user)
+    history.save()
+    goal = Goal(name='Trip to France', amount=1600000, owner=request.user)
+    goal.save()
+    return Response(AccountHistorySerializer(request.user.history_set.all(), many=True).data)
+
+class HistoryMock3(APIView): # d,d,w,d,d
+  def get(self, request, format=None):
+    request.user.savings = 50000
+    request.user.scheduled_deposit = 20000
+    request.user.scheduled_frequency = 'week'
+    request.user.active = True
+    request.user.bank_amount = 9000000
+    request.user.bank_name = 'Bank of America'
+    request.user.save()
+    history = History(date="2015-12-20", balance=20000, owner=request.user)
+    history.save()
+    history = History(date="2015-12-27", balance=40000, owner=request.user)
+    history.save()
+    history = History(date="2016-1-3",   balance=10000, owner=request.user)
+    history.save()
+    history = History(date="2015-1-10",  balance=30000, owner=request.user)
+    history.save()
+    history = History(date="2015-1-17",  balance=50000, owner=request.user)
+    history.save()
+    goal = Goal(name='Trip to France', amount=1600000, owner=request.user)
+    goal.save()
+    return Response(AccountHistorySerializer(request.user.history_set.all(), many=True).data)
+
+class HistoryMock4(APIView): # d,d,d,d,w
+  def get(self, request, format=None):
+    request.user.savings = 50000
+    request.user.scheduled_deposit = 20000
+    request.user.scheduled_frequency = 'week'
+    request.user.active = True
+    request.user.bank_amount = 9000000
+    request.user.bank_name = 'Bank of America'
+    request.user.save()
+    history = History(date="2015-12-20", balance=20000, owner=request.user)
+    history.save()
+    history = History(date="2015-12-27", balance=40000, owner=request.user)
+    history.save()
+    history = History(date="2016-1-3",   balance=60000, owner=request.user)
+    history.save()
+    history = History(date="2015-1-10",  balance=80000, owner=request.user)
+    history.save()
+    history = History(date="2015-1-17",  balance=50000, owner=request.user)
+    history.save()
+    goal = Goal(name='Trip to France', amount=1600000, owner=request.user)
+    goal.save()
+    return Response(AccountHistorySerializer(request.user.history_set.all(), many=True).data)
+
+# account history mocks
+# d,d,d,d,d,d,d,d,d,d,d
+# d,d,d,w,w,d,w,d,d,w,d
+# d,w,d,w,d,w,d,d,w,d,d

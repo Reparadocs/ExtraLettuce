@@ -21,6 +21,11 @@ urlpatterns = [
     url(r'^days/', views.ScheduleDaysLeft.as_view(), name='days'),
     url(r'^history/', views.AccountHistory.as_view(), name='history'),
     url(r'^daily/', views.DailyCron.as_view(), name='daily'),
+    url(r'^historymock1/', views.HistoryMock1.as_view(), name='historymock1'),
+    url(r'^historymock2/', views.HistoryMock2.as_view(), name='historymock2'),
+    url(r'^historymock3/', views.HistoryMock3.as_view(), name='historymock3'),
+    url(r'^historymock4/', views.HistoryMock4.as_view(), name='historymock4'),
+    url(r'^clearhistory/', views.DeleteHistory.as_view(), name='clearhistory'),
 ]
 
 urlpatterns = format_suffix_patterns(urlpatterns)
