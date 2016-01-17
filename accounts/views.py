@@ -10,9 +10,17 @@ from accounts.serializers import *
 from django.core.exceptions import ObjectDoesNotExist
 import requests
 import json
+from rest_framework_swagger import *
 
 class CreateAccount(APIView):
   def post(self, request, format=None):
+    """
+    Create an account. Returns 201 upon successful creation, and 400 for already
+    existing user or for any other bad request.
+    ---
+    request_serializer: RegistrationSerializer
+    response_serializer: RegistrationSerializer
+    """
     serializer = RegistrationSerializer(data=request.data)
     if serializer.is_valid():
       try:
@@ -34,6 +42,12 @@ class ScheduleAccount(APIView):
   permission_classes = (IsAuthenticated,)
 
   def post(self, request, format=None):
+    """
+    Set an amount of money to save at a set frequency.
+    Returns 200 upon success and 400 on error.
+    ---
+    request_serializer: ScheduleSerializer
+    """
     serializer = ScheduleSerializer(data=request.data)
     if serializer.is_valid():
       request.user.scheduled_deposit = serializer.data['amount']
@@ -42,12 +56,17 @@ class ScheduleAccount(APIView):
       return Response({'success': True}, status=status.HTTP_200_OK)
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-
 class AccountInfo(APIView):
   authentication_classes = (TokenAuthentication, SessionAuthentication)
   permission_classes = (IsAuthenticated,)
 
   def get(self, request, format=None):
+    """
+    Retrieve the account information.
+    Returns 200 upon success.
+    ---
+    response_serializer: AccountSerializer
+    """
     return Response(AccountSerializer(request.user).data)
 
 class AccountBalanceInfo(APIView):
@@ -55,6 +74,12 @@ class AccountBalanceInfo(APIView):
   permission_classes = (IsAuthenticated,)
 
   def get(self, request, format=None):
+    """
+    Retrieve the account's balance information.
+    Returns 200 upon success.
+    ---
+    response_serializer: BalanceSerializer
+    """
     return Response(BalanceSerializer(request.user).data)
 
 class AccountWithdraw(APIView):
@@ -62,6 +87,13 @@ class AccountWithdraw(APIView):
   permission_classes = (IsAuthenticated,)
 
   def post(self, request, format=None):
+    """
+    Withdraw from the account's savings.
+    Returns 200 upon success and 400 on withdrawing amount greater than
+    the total savings or for any other bad request.
+    ---
+    request_serializer: WithdrawSerializer
+    """
     serializer = WithdrawSerializer(data=request.data)
     if serializer.is_valid():
       withdrawal = serializer.data['withdrawal']
@@ -77,6 +109,12 @@ class AccountDeposit(APIView):
   permission_classes = (IsAuthenticated,)
 
   def post(self, request, format=None):
+    """
+    Deposit into the account's savings.
+    Returns 200 upon success and 400 on error.
+    ---
+    request_serializer: DepositSerializer
+    """
     serializer = DepositSerializer(data=request.data)
     if serializer.is_valid():
       request.user.savings = request.user.savings + serializer.data['deposit']
@@ -89,6 +127,12 @@ class AccountIsActive(APIView):
   permission_classes = (IsAuthenticated,)
 
   def get(self, request, format=None):
+    """
+    Query whether or not the account is saving money
+    at the specified frequency.
+    ---
+    response_serializer: IsActiveSerializer
+    """
     return Response(IsActiveSerializer(request.user).data)
 
 class AccountRestart(APIView):
@@ -96,6 +140,12 @@ class AccountRestart(APIView):
   permission_classes = (IsAuthenticated,)
 
   def get(self, request, format=None):
+    """
+    Sets the active status of the account to true.
+    Returns 200 upon success and 400 if account is already active.
+    ---
+    response_serializer: ScheduleSerializer
+    """
     if request.user.active: #error if already active
       return Response({'errors': 'Already active'}, status=status.HTTP_400_BAD_REQUEST)
     request.user.active = True
@@ -107,6 +157,12 @@ class AccountPause(APIView):
   permission_classes = (IsAuthenticated,)
 
   def get(self, request, format=None):
+    """
+    Sets the active status of the account to false.
+    Returns 200 upon success and 400 if account is already inactive.
+    ---
+    response_serializer: ScheduleSerializer
+    """
     if not(request.user.active): #error if already active
       return Response({'errors': 'Already not active'}, status=status.HTTP_400_BAD_REQUEST)
     request.user.active = False
@@ -118,6 +174,12 @@ class AccountLink(APIView):
   permission_classes = (IsAuthenticated,)
 
   def post(self, request, format=None):
+    """
+    Links the account to the given bank account.
+    Returns 200 upon success and 400 on error.
+    ---
+    request_serializer: BankAccountSerializer
+    """
     serializer = BankAccountSerializer(data=request.data)
     if serializer.is_valid():
       payload = {
@@ -149,6 +211,12 @@ class AccountConfirm(APIView):
   permission_classes = (IsAuthenticated,)
 
   def post(self, request, format=None):
+    """
+    Confirms the given account.
+    Returns 200 upon success and 400 on error.
+    ---
+    request_serializer: BankConfirmSerializer
+    """
     serializer = BankConfirmSerializer(data=request.data)
     if serializer.is_valid():
       payload = {
