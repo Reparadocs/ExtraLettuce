@@ -9,6 +9,9 @@ class ScheduleSerializer(serializers.Serializer):
   amount = serializers.IntegerField()
   frequency = serializers.ChoiceField(choices=['day', 'week', 'month'])
 
+class ScheduleDaysLeftSerializer(serializers.Serializer):
+	scheduled_days_left = serializers.IntegerField()
+
 class AccountSerializer(serializers.Serializer):
   username = serializers.CharField(max_length=100)
   scheduled_deposit = serializers.IntegerField()

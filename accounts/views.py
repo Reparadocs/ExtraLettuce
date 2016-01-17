@@ -51,10 +51,29 @@ class ScheduleAccount(APIView):
     serializer = ScheduleSerializer(data=request.data)
     if serializer.is_valid():
       request.user.scheduled_deposit = serializer.data['amount']
-      request.user.scheduled_frequency = serializer.data['frequency']
+      frequency = serializer.data['frequency']
+      request.user.scheduled_frequency = frequency
+      if frequency == "day":
+        request.user.scheduled_days_left = 1
+      elif frequency == "week":
+        request.user.scheduled_days_left = 7
+      elif frequency == "month":
+        request.user.scheduled_days_left = 30
       request.user.save()
       return Response({'success': True}, status=status.HTTP_200_OK)
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class ScheduleDaysLeft(APIView):
+  authentication_classes = (TokenAuthentication, SessionAuthentication)
+  permission_classes = (IsAuthenticated,)
+
+  def get(self, request, format=None):
+    """
+    Retrieve the days left for the deposit cycle.
+    ---
+    response_serializer: ScheduleDaysLeftSerializer
+    """
+    return Response(ScheduleDaysLeftSerializer(request.user).data)
 
 class AccountInfo(APIView):
   authentication_classes = (TokenAuthentication, SessionAuthentication)
@@ -253,11 +272,21 @@ class AccountGoals(APIView):
   permission_classes = (IsAuthenticated,)
 
   def get(self, request, format=None):
+    """
+    Retrieves the specified goal.
+    Returns 200 upon success and 400 on error.
+    ---
+    response_serializer: AccountGoalSerializer
+    """
     if len(request.user.goal_set.all()) is not 0:
       return Response(AccountGoalSerializer(request.user.goal_set.all(), many=True).data)
     return Response({})
 
   def post(self, request, format=None):
+    """
+    Updates the specified goal.
+    Returns 201 upon success and 400 on error.
+    """
     serializer = AccountGoalSerializer(data=request.data)
     if serializer.is_valid():
       goal = Goal(name=serializer.data['name'], amount=serializer.data['amount'], owner=request.user)
