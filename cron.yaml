@@ -2,4 +2,4 @@ version: 1
 cron:
  - name: "daily"
    url: "/account/daily"
-   schedule: "*/1 * * * *"
+   schedule: "* * * * *"
