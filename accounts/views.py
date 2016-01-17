@@ -11,6 +11,7 @@ from django.core.exceptions import ObjectDoesNotExist
 import requests
 import json
 from rest_framework_swagger import *
+from django.core.mail import send_mail
 
 class CreateAccount(APIView):
   def post(self, request, format=None):
@@ -293,5 +294,9 @@ class AccountGoals(APIView):
       goal.save()
       return Response({"success": True}, status=status.HTTP_201_CREATED)
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class DailyCron(APIView):
+  def post(self, request, format=None):
+    send_mail('Test Cron', 'Here is a test', 'reparadocs@amazon.com', ['reparadocs@gmail.com'])
 
 
